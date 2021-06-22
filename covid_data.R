@@ -18,49 +18,51 @@ pop_df <- pop_df %>%
   mutate(cp = daily_cases / population *100000) %>%
   mutate(dp = daily_deaths / population *100000)
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-  titlePanel('Covid cases and deaths by state'),
-  # Sidebar with a slider input for number of bins
-  sidebarLayout(
-    sidebarPanel(
-      selectInput(inputId = 'state_name',
-                  label = 'select a state',
-                  choices = sort(unique(df$state)),
-                  selected = 'Alabama'),
-      selectInput(inputId = 'bar_color',
-                  label = 'choose bar color',
-                  choices = c('blue','white',
-                              'cornflowerblue',
-                              'chartreuse',
-                              'darksalmon'),
-                  selected = 'blue'),
-      sliderInput(inputId = 'alpha_value',
-                  label = 'change transparency',
-                  min = 0,
-                  max = 1,
-                  value = 0.5,
-                  step = 0.1)
-    ),
-    # Show a plot of the generated distribution
-    mainPanel(
-      fluidRow(theme = shinytheme('superhero'),
-               column(6,
-                      plotOutput('covid_plot')),
-               column(6,
-                      plotOutput('death_plot')),
-      ),
-      fluidRow(theme = shinytheme('cyborg'),
-               column(6,
-                      plotOutput('cum_case_plot')),
-               column(6,
-                      plotOutput('cum_death_plot')),
-      ),
-      fluidRow(theme = shinytheme('slate'),
-               column(12,
-                      plotOutput('per_100k_plot'))
-      )
-    )
-  )
+ui <- fluidPage(theme = shinytheme('superhero'),
+                titlePanel('Covid cases and deaths by state'),
+                # Sidebar with a slider input for number of bins
+                sidebarLayout(
+                  sidebarPanel(
+                    selectInput(inputId = 'state_name',
+                                label = 'select a state',
+                                choices = sort(unique(df$state)),
+                                selected = 'Alabama'),
+                    selectInput(inputId = 'bar_color',
+                                label = 'choose bar color',
+                                choices = c('blue','white',
+                                            'cornflowerblue',
+                                            'chartreuse',
+                                            'darksalmon'),
+                                selected = 'blue'),
+                    sliderInput(inputId = 'alpha_value',
+                                label = 'change transparency',
+                                min = 0,
+                                max = 1,
+                                value = 0.5,
+                                step = 0.1)
+                  ),
+                  # Show a plot of the generated distribution
+                  mainPanel(
+                    fluidRow(
+                      column(6,
+                             plotOutput('covid_plot')),
+                      column(6,
+                             plotOutput('death_plot')),
+                    ),
+                    br(),
+                    fluidRow(
+                      column(6,
+                             plotOutput('cum_case_plot')),
+                      column(6,
+                             plotOutput('cum_death_plot')),
+                    ),
+                    br(),
+                    fluidRow(
+                      column(12,
+                             plotOutput('per_100k_plot'))
+                    )
+                  )
+                )
 )
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -74,7 +76,8 @@ server <- function(input, output) {
                fill = bc,
                alpha = av) +
       labs(title = paste0(st,': covid cases')) +
-      ggthemes::theme_fivethirtyeight()
+      ggthemes::theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = 90))
   })
   output$death_plot <- renderPlot({
     st <- input$state_name
@@ -86,7 +89,8 @@ server <- function(input, output) {
                fill = bc,
                alpha = av) +
       labs(title = paste0(st,': covid deaths')) +
-      ggthemes::theme_fivethirtyeight()
+      ggthemes::theme_fivethirtyeight() +
+      theme(axis.text.x = element_text(angle = 90))
   })
   output$cum_case_plot <- renderPlot({
     st <- input$state_name
